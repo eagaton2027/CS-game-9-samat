@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
+    <style>
+*{
+    padding: 0;
+    margin: 0;
+}
+body{
+    background-image: url('images/laboratory.jpg');
+    background-repeat: no-repeat;
+    overflow-y: hidden;
+    background-size: cover;
+    font-size: 17px;
+    font-family: Pixelify Sans, sans-serif;
+}
+#game{
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+#status{
+    position: absolute;
+}
+.characters{
+    width: 100%;
+    min-height: 50vh;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+.char-info{
+    text-align: center;
+}
+.info{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+.player-btn{
+    color: white;
+    background-image: linear-gradient(rgb(103, 103, 212), rgb(24, 49, 104));
+    width: 50%;
+    padding: 10px 20px 30px 20px;
+}
+.btn{
+    width: 200px;
+    display: flex;
+    align-items: center;
+    margin: 10px 0px 5px 0px;
+}
+.btn-icon{
+    margin: 0px 10px 0px 0px;
+    background: none;
+    border: none;
+}
+.p-icon{
+    width: 100px;
+    align-items: center;
+}
+.home-link{
+    position: absolute;
+    top: 30px;
+    left: 50px;
+    font-size: 24px;
+    font-weight: bold;
+    scale: 1.5;
+}
+</style>
+<script>
+    var playerHealth = 100;
+    var enemyHealth = 200;
+    var isPlayerTurn = true;
+    let playerUltimate = 0;
+
+    function playerAttack() {
+        if (isPlayerTurn) {
+            var damage = Math.floor(Math.random() * 15) + 5;
+            enemyHealth -= damage;
+            document.getElementById("enemyHealth").textContent = enemyHealth;
+            if (enemyHealth <= 0) {
+                endGame("Player wins!");
+            } else if (enemyHealth>=20 && enemyHealth<=30) {
+                enemyHealth+=30;
+                document.getElementById("status").innerHTML = "Virus is... evolving";
+            } else if (enemyHealth==101 || enemyHealth==10){
+                enemyHealth-=10;
+                playerHealth+=20
+                document.getElementById("status").innerHTML = "Divine Intervention";
+            }
+            else {
+                isPlayerTurn = false;
+                setTimeout(enemyAttack, 1000);
+            }
+        } else{ 
+            isPlayerTurn=false
+        }
+        const orbDropChance = Math.random();
+        if (orbDropChance <= 0.5 && playerUltimate<30) {
+            playerUltimate += 10;
+            document.getElementById("player-ultimate-value").textContent = playerUltimate;
+        }
+    }       
+    function ultimate() {
+        if (isPlayerTurn && playerUltimate == 30) {
+            playerHealth += 35;
+            enemyHealth -= 40
+            playerUltimate = 0;
+            document.getElementById("playerHealth").textContent = playerHealth;
+            document.getElementById("player-ultimate-value").textContent = playerUltimate;
+            document.getElementById("enemyHealth").textContent = enemyHealth;
+            if (enemyHealth <=0) {
+                endGame("Player wins!");
+            }else{
+                isPlayerTurn=false;
+                setTimeout(enemyAttack, 1000);
+            }
+        }else {
+            document.getElementById("status").innerHTML="Ultimate is unavailable";
+        }
+    }
+
+    function enemyAttack() {
+        var damage = Math.floor(Math.random() * 20) + 1;
+        playerHealth -= damage;
+        document.getElementById("playerHealth").textContent = playerHealth;
+        if (playerHealth <= 0) {
+            endGame("Enemy wins!");
+        } else {
+            isPlayerTurn = true;
+        }
+    }
+
+    function endGame(message) {
+        document.getElementById("game").innerHTML += "<p>" + message + "</p>";
+        document.getElementById("game").innerHTML += "<button onclick='location.reload()'>Play Again</button>";
+    }
+</script>
+</head>
+<body>
+    <div class="home-link"><a href="page2.html"><img src="img/arrow.png" alt="ahha"></a></div>
+    <div id="game">
+        <p id="status"></p>
+
+        <div class="characters">
+            <div class="char-info">
+                <p>Player's Health: <span id="playerHealth">100</span></p>
+                <img src="img/doctor 1.gif" width="250px" length="250x">
+            </div>
+            <div class="char-info">
+                <p>Enemy's Health: <span id="enemyHealth">200</span></p>
+                <img src="img/covid.gif" width="200px" length="200px">
+            </div>
+        </div>
+
+        <div class="info">
+            <div class="player-btn">
+                <div class="btn">
+                    <div class="btn-icon" onclick="playerAttack()"><img src="img/atk.png" class="p-icon"/></div>
+                    Attack
+                </div>
+                <div class="btn">
+                    <div class="btn-icon" onclick="ultimate()"><img src="img/ult.png" class="p-icon" /> </div>
+                    Ultimate Charge: <span id="player-ultimate-value">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html>
